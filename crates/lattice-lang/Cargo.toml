@@ -1,0 +1,12 @@
+[package]
+name = "lattice-lang"
+version = "0.1.0"
+edition = "2021"
+description = "Lattice's language definitions"
+
+[dependencies]
+lattice-protocol = { path = "../lattice-protocol", version = "0.1.0"  }
+
+thiserror = "1.0.34"
+miette = { version = "5.1.1", features = ["fancy"] }
+

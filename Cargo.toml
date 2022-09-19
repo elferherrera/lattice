@@ -1,0 +1,16 @@
+[package]
+name = "lattice"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = [
+    "crates/lattice-lang",
+    "crates/lattice-protocol",
+]
+
+[dependencies]
+lattice-protocol = {path = "crates/lattice-protocol", version = "0.1.0"}
+lattice-lang = {path = "crates/lattice-lang", version = "0.1.0"}

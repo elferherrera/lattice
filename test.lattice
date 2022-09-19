@@ -1,0 +1,93 @@
+# Commands are inputs for pipes
+# types: int, float, string, block
+
+mod new_module          # Declares a module in the path
+use new_module::a       # Statement to make function available in this file
+use new_module::{b, c}  # Statement to make function available in this file
+
+let a = 2
+let b = 3
+let c = $a + $b
+
+$a || $b
+$a or $b
+
+$a && $b
+$a and $b
+
+# Calling a command
+command val --flag -f
+
+let a = command val --flag -f
+    | command b # This comment gets ignored
+    | command c
+
+alias a = command val --flag -f
+
+# This is a block and it cannot be stored
+{
+    1 + 2
+}
+
+# But it has a return value and can be stored
+let a = {
+    1 + 2
+}
+
+# This is a closure and can be stored and used in commands
+let d = {||
+
+}
+
+let b = command a | command c | command $d
+let b = (command a | command c | command d)
+
+let c = "this is a string"
+let d = """this is a "raw" string"""
+let e = f"this: {$a}"
+let f = f"""this: {$a}"""
+
+# This is a comment
+# This becomes a list of strings
+let e = [bare words are strings]
+$e.0 # returns bare
+
+# This becomes a table
+let f = [[a, b]; [1 2] [3 4]]
+$f.0 # returns [1 2] (row)
+$f.a # returns [1 3] (col)
+
+# a function definition
+def inner(a: int, c: string) -> string {
+    # Single if is an statement
+    if (true) {
+        return
+    }
+
+    # if/else is an expression and both should return the same value type
+    let a = if true {
+        1
+    } else {
+        2
+    }
+
+    # Return type should match def output
+    "value"
+}
+
+'name while true {
+    if true {
+        break 'name
+    }
+}
+
+# for loops over elements in list
+for i in 1..20 {
+    if (i == 3) {
+        continue
+    }
+
+    if (i > 10) {
+        break
+    }
+}

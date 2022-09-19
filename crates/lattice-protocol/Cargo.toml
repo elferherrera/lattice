@@ -1,0 +1,10 @@
+[package]
+name = "lattice-protocol"
+version = "0.1.0"
+edition = "2021"
+description = "Lattice's internal protocols"
+
+[dependencies]
+thiserror = "1.0.34"
+miette = { version = "5.1.1", features = ["fancy"] }
+

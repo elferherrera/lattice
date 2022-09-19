@@ -1,0 +1,90 @@
+program         -> declaration* EOF
+
+// Declarations
+declaration     -> modDecl
+                    | modImport
+                    | funDecl
+                    | varDecl
+                    | statement
+
+modDecl         -> "mod" primary
+funDecl         -> "def" function
+varDecl         -> "let" IDENTIFIER ( "=" expression )?
+modImport       -> modImportSingle | modImportMulti
+
+// Statements
+statement       -> block
+                    | closure
+                    | whileStmt
+                    | forStmt
+                    | ifStmt
+                    | returnStmt
+                    | breakStmt
+                    | continueStmt
+                    | exprStmt
+
+block           -> "{" declaration* "}"
+closure         -> "{|" IDENTIFIER+ ( "," IDENTIFIER ) "|" declaration* "}"
+whileStmt       -> "while" "(" expression ")" statement
+forStmt         -> "for" primary "in" array|range closure
+ifStmt          -> "if" "(" expression ")" statement
+                    ("else" statement)?
+returnStmt      -> "return" expression?
+breakStmt       -> "break"
+continueStmt    -> "continue"
+exprStmt        -> expression
+
+// Expressions
+expression      -> assignment
+assignment      -> pipe ( "=" pipe | block | closure )?
+
+pipe            -> logic_or ( "|" logic_or )*
+logic_or        -> logic_and ( ( "or" | "||" ) logic_and)*
+logic_and       -> equality ( ( "and" | "&&" ) equality)*
+equality        -> comparison (( "==" | "!=" ) comparison)*
+comparison      -> term (( ">" | ">=" | "<" | "<=") term)*
+term            -> factor (( "-" | "+" ) factor)*
+factor          -> unary (( "/" | "*" ) unary)*
+
+unary           -> ( "!" | "-" ) unary | call
+call            -> primary ( (" " arguments? " ") )*
+primary         -> "true" | "false" | "$nothing"
+                    | INTEGER
+                    | FLOAT
+                    | STRING
+                    | RAW_STRING
+                    | FLAG
+                    | VALUE
+                    | IDENTIFIER
+                    | RANGE
+                    | RECORD
+                    | LIST
+                    | TABLE
+                    | "(" expression ")"
+
+// Utility rules
+modImportSingle -> "use" IDENTIFIER "::" IDENTIFIER
+modImportMulti  -> "use" IDENTIFIER "::" "{" IDENTIFIER ("," IDENTIFIER)+ "}"
+
+function        -> IDENTIFIER "(" parameters? ")" block
+parameters      -> IDENTIFIER ( "," IDENTIFIER )*
+arguments       -> primary ( " " primary )*
+
+// Tokens from Lexing
+INTEGER         -> DIGIT+
+FLOAT           -> DIGIT+ "." DIGIT+
+STRING          -> "\"" <any char except "\"">* "\""
+RAW_STRING      -> "\"\"\"" .* "\"\"\""
+FLAG            -> "-" "-"? ALPHA+
+VALUE           -> "$" IDENTIFIER
+IDENTIFIER      -> ALPHA ( ALPHA | DIGIT )*
+RANGE           -> DIGIT* ".." DIGIT*
+ALPHA           -> "a" ... "z" | "A" ... "Z" | "_"
+DIGIT           -> "0" ... "9"
+
+// Collections
+PRIMITIVE       -> INTEGER | FLOAT | STRING | RAW_STRING | VALUE | IDENTIFIER
+RECORD          -> "{" ( PRIMITIVE ":" "(" expression ")" ) ( ","? PRIMITIVE ":" "(" expression ")" )* "}"
+LIST            -> "[" ( PRIMITIVE | "(" expression ")" ) ( ","? ( PRIMITIVE | "(" expression ")" )* "]"
+TABLE           -> "[" "[" PRIMITIVE ( ","? PRIMITIVE )* "]:" ARRAY* "]"
+                    | "[" RECORD ( ","? RECORD )* "]"
